@@ -7,17 +7,27 @@
 PImage sourceImg;
 PImage targetImg;
 
+int maxDisplayWidth;
+int maxDisplayHeight;
+
 boolean glitchComplete = false;
 boolean glitchSaved = false;
 
-/*
- * Script Settings
- */
 
-// image path is relative to sketch directory
+// File path (relative to script directory)
 String imgDir = "source/";
 String imgFileName = "test";
 String fileType = "jpg";
+
+// Output folder (relative to script directory)
+String outputDir = "output/";
+
+// Viewing window size (regardless of image size)
+// TODO: implement
+int maxDisplaySize = 1000;
+
+
+///// CONFIG START
 
 // repeat the process this many times
 int iterations = 3;
@@ -31,10 +41,8 @@ boolean shiftVertically = false;
 // shift the image horizontally true/false
 boolean shiftHorizontally = true;
 
+///// END
 
-/*
- * End of Script Settings
- */
 
 void setup() {
   // load images into PImage variables
@@ -44,12 +52,22 @@ void setup() {
   // use only numbers (not variables) for the size() command, Processing 3
   size(1, 1);
 
-  // allow resize and update surface to image dimensions
+  // allow resize 
   surface.setResizable(true);
-  surface.setSize(targetImg.width, targetImg.height);
+  // calculate window size
+  float ratio = (float)targetImg.width/(float)targetImg.height;
+  if(ratio < 1.0) {
+    maxDisplayWidth = (int)(maxDisplaySize * ratio);
+    maxDisplayHeight = maxDisplaySize;
+  } else {
+    maxDisplayWidth = maxDisplaySize;
+    maxDisplayHeight = (int)(maxDisplaySize / ratio);
+  }
+
+  surface.setSize(maxDisplayWidth, maxDisplayHeight);
 
   // load image onto surface
-  image(sourceImg, 0, 0);
+  image(sourceImg, 0, 0, maxDisplayWidth, maxDisplayHeight);
 }
 
 
@@ -95,13 +113,12 @@ void draw() {
     glitchComplete = true;
 
     // load updated image onto surface
-    image(targetImg, 0, 0, targetImg.width, targetImg.height);
+    image(targetImg, 0, 0, maxDisplayWidth, maxDisplayHeight);
   }
 
   if (glitchComplete && !glitchSaved) {
 
     // Save in output directory
-    String outputDir = "output/";
     // Generate file name based on operations performed
     String outputSuffix = "_" + iterations + "it";
     if (recursiveIterations)
@@ -117,6 +134,7 @@ void draw() {
     println("Click or press any key to exit...");
   }
 }
+
 
 void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int sourceX, int sourceChannel, int targetChannel)
 {
