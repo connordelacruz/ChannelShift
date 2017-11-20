@@ -31,6 +31,9 @@ int maxDisplaySize = 1000;
 // repeat the process this many times
 int iterations = 3;
 
+// swap channels at random if true, just shift if false
+boolean swapChannels = true;
+
 // use result image as new source for iterations
 boolean recursiveIterations = true;
 
@@ -83,9 +86,10 @@ void draw() {
     // repeat the process according to the iterations variable
     for(int i = 0; i < iterations; i++)
     {
-      // generate random numbers for which channels to swap
+      // generate random numbers for which channels to shift
       int sourceChannel = int(random(3));
-      int targetChannel = int(random(3));
+      // pick a random channel to swap with if swapChannels
+      int targetChannel = swapChannels ? int(random(3)) : sourceChannel;
   
       
       // if shiftHorizontally is true, generate a random number to shift horizontally by
@@ -119,6 +123,8 @@ void draw() {
     // Save in output directory
     // Generate file name based on operations performed
     String outputSuffix = "_" + iterations + "it";
+    if (swapChannels)
+      outputSuffix += "-swap";
     if (recursiveIterations)
       outputSuffix += "-recursive";
     if (shiftVertically)
