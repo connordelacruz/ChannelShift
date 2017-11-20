@@ -23,7 +23,6 @@ String fileType = "jpg";
 String outputDir = "output/";
 
 // Viewing window size (regardless of image size)
-// TODO: implement
 int maxDisplaySize = 1000;
 
 
@@ -63,7 +62,6 @@ void setup() {
     maxDisplayWidth = maxDisplaySize;
     maxDisplayHeight = (int)(maxDisplaySize / ratio);
   }
-
   surface.setSize(maxDisplayWidth, maxDisplayHeight);
 
   // load image onto surface
