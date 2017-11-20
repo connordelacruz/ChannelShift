@@ -134,6 +134,15 @@ void draw() {
 }
 
 
+/**
+ * Shift the channel
+ * @param sourcePixels Pixels from the source image
+ * @param targetPixels Pixels from the target image
+ * @param sourceY Vertical shift amount
+ * @param sourceX Horizontal shift amount
+ * @param sourceChannel Channel from the source image
+ * @param targetChannel Channel from the target image
+ */
 void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int sourceX, int sourceChannel, int targetChannel)
 {
     // starting at the sourceY and pointerY loop through the rows
