@@ -34,6 +34,9 @@ int iterations = 3;
 // swap channels at random if true, just shift if false
 boolean swapChannels = true;
 
+// Max percent of image size to shift channels by. Lower numbers for less drastic effects
+float shiftThreshold = 1.0;
+
 // use result image as new source for iterations
 boolean recursiveIterations = true;
 
@@ -94,11 +97,11 @@ void draw() {
       
       // if shiftHorizontally is true, generate a random number to shift horizontally by
       if(shiftHorizontally)
-        horizontalShift = int(random(targetImg.width));
+        horizontalShift = int(random(targetImg.width * shiftThreshold));
       
       // if shiftVertically is true, generate a random number to shift vertically by
       if(shiftVertically)
-        verticalShift = int(random(targetImg.height));
+        verticalShift = int(random(targetImg.height * shiftThreshold));
       
       // shift the channel
       copyChannel(sourceImg.pixels, targetImg.pixels, verticalShift, horizontalShift, sourceChannel, targetChannel);
