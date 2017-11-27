@@ -147,6 +147,15 @@ void draw() {
   }
 }
 
+void processImage() {
+  // TODO: move processing stuff here
+}
+
+String outputFileName() {
+  // TODO: return output file name w/ appropriate suffix
+  // TODO: ensure this isn't overwriting a file of the same name?
+  return "";
+}
 
 /**
  * Shift the channel
