@@ -99,42 +99,7 @@ void setup() {
 void draw() { 
 
   if (!glitchComplete) {
-    // TODO: extract start
-    // load pixels
-    sourceImg.loadPixels();
-    targetImg.loadPixels();
-
-    // repeat the process according to the iterations variable
-    for(int i = 0; i < iterations; i++)
-    {
-      // generate random numbers for which channels to shift
-      int sourceChannel = int(random(3));
-      // pick a random channel to swap with if swapChannels
-      int targetChannel = swapChannels ? int(random(3)) : sourceChannel;
-
-
-      // if shiftHorizontally is true, generate a random number to shift horizontally by
-      if(shiftHorizontally)
-        horizontalShift = int(random(targetImg.width * shiftThreshold));
-
-      // if shiftVertically is true, generate a random number to shift vertically by
-      if(shiftVertically)
-        verticalShift = int(random(targetImg.height * shiftThreshold));
-
-      // shift the channel
-      copyChannel(sourceImg.pixels, targetImg.pixels, verticalShift, horizontalShift, sourceChannel, targetChannel);
-
-      // use the target as the new source for the next iteration
-      if(recursiveIterations)
-        sourceImg.pixels = targetImg.pixels;
-    }
-
-    // update the target pixels
-    targetImg.updatePixels();
-    // TODO: extract end
-
-    // glitch is done, proceed to update surface and save
-    glitchComplete = true;
+    processImage();
 
     // load updated image onto surface
     image(targetImg, 0, 0, maxDisplayWidth, maxDisplayHeight);
@@ -188,6 +153,7 @@ void processImage() {
   // update the target pixels
   targetImg.updatePixels();
 
+  glitchComplete = true;
 }
 
 
