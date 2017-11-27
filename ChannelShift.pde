@@ -46,12 +46,16 @@ boolean shiftHorizontally = true;
 // Viewing window size (regardless of image size)
 int maxDisplaySize = 1000;
 
+// (FOR TESTING) If true, don't save the file and just display it
+boolean discardResult = false;
+
 ///// END
 
 
 PImage sourceImg;
 PImage targetImg;
 
+// TODO: implement
 String sessionid;
 
 int maxDisplayWidth;
@@ -134,24 +138,12 @@ void draw() {
     image(targetImg, 0, 0, maxDisplayWidth, maxDisplayHeight);
   }
 
-  // TODO: extract below to saveResult()
+  // Save file
   if (glitchComplete && !glitchSaved) {
-
-    // Save in output directory
-    // Generate file name based on operations performed
-    String outputSuffix = "_" + iterations + "it";
-    if (swapChannels)
-      outputSuffix += "-swap";
-    if (recursiveIterations)
-      outputSuffix += "-recursive";
-    if (shiftVertically)
-      outputSuffix += "-vert" + verticalShift;
-    if (shiftHorizontally)
-      outputSuffix += "-hori" + horizontalShift;
-    // save surface
-    targetImg.save(outputDir + imgFileName + outputSuffix + ".png");
-    glitchSaved = true;
-    println("Glitched image saved");
+    if (!discardResult) {
+      saveResult();
+      println("Glitched image saved");
+    }
     println("Click or press any key to exit...");
   }
 }
@@ -160,29 +152,29 @@ void processImage() {
   // TODO: move processing stuff here
 }
 
-void saveResult() {
-  if (glitchComplete && !glitchSaved) {
-    // Append suffix with unique identifier
-    String outputSuffix = hex((int)random(0xffff),4);
 
-    // Append config details if verboseFilename is set
-    if (verboseFilename) { 
-      outputSuffix += "_" + iterations + "it";
-      if (swapChannels)
-        outputSuffix += "-swap";
-      if (recursiveIterations)
-        outputSuffix += "-recursive";
-      if (shiftVertically)
-        outputSuffix += "-vert" + verticalShift;
-      if (shiftHorizontally)
-        outputSuffix += "-hori" + horizontalShift;
-    }
-    // save surface
-    targetImg.save(outputDir + imgFileName + outputSuffix + ".png");
-    glitchSaved = true;
-    println("Glitched image saved");
-    println("Click or press any key to exit...");
+/**
+ * Generate output file name and save result
+ */
+void saveResult() {
+  // Append suffix with unique identifier
+  String outputSuffix = hex((int)random(0xffff),4);
+
+  // Append config details if verboseFilename is set
+  if (verboseFilename) { 
+    outputSuffix += "_" + iterations + "it";
+    if (swapChannels)
+      outputSuffix += "-swap";
+    if (recursiveIterations)
+      outputSuffix += "-recursive";
+    if (shiftVertically)
+      outputSuffix += "-vert" + verticalShift;
+    if (shiftHorizontally)
+      outputSuffix += "-hori" + horizontalShift;
   }
+  // save surface
+  targetImg.save(outputDir + imgFileName + outputSuffix + ".png");
+  glitchSaved = true;
 }
 
 /**
