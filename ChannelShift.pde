@@ -14,6 +14,8 @@ boolean glitchComplete = false;
 boolean glitchSaved = false;
 
 
+///// FILE SETUP
+
 // File path (relative to script directory)
 String imgDir = "source/";
 String imgFileName = "test";
@@ -22,11 +24,8 @@ String fileType = "jpg";
 // Output folder (relative to script directory)
 String outputDir = "output/";
 
-// Viewing window size (regardless of image size)
-int maxDisplaySize = 1000;
 
-
-///// CONFIG START
+///// SKETCH CONFIGURATIONS
 
 // repeat the process this many times
 int iterations = 3;
@@ -45,6 +44,12 @@ boolean shiftVertically = false;
 
 // shift the image horizontally true/false
 boolean shiftHorizontally = true;
+
+
+///// MISC
+
+// Viewing window size (regardless of image size)
+int maxDisplaySize = 1000;
 
 ///// END
 
