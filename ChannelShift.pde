@@ -24,22 +24,16 @@ boolean verboseFilename = true;
 
 // repeat the process this many times
 int iterations = 3;
-
 // swap channels at random if true, just shift if false
 boolean swapChannels = true;
-
 // Max percent of image size to shift channels by. Lower numbers for less drastic effects
 float shiftThreshold = 1.0;
-
 // use result image as new source for iterations
 boolean recursiveIterations = true;
-
 // shift the image vertically true/false
 boolean shiftVertically = false;
-
 // shift the image horizontally true/false
-boolean shiftHorizontally = true;
-
+boolean shiftHorizontally = !shiftVertically;
 
 ///// MISC
 
