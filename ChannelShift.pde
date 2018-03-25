@@ -15,7 +15,7 @@ String imgFileName = "test";
 String fileType = "jpg";
 
 // Output folder (relative to script directory)
-String outputDir = "output/";
+String outputDir = "output/" + imgFileName + "/";
 // If true, add a suffix to the output filename with details on the sketch config
 boolean verboseFilename = true;
 
@@ -38,7 +38,7 @@ boolean shiftHorizontally = !shiftVertically;
 ///// MISC
 
 // Viewing window size (regardless of image size)
-int maxDisplaySize = 1000;
+int maxDisplaySize = 800;
 
 // (FOR TESTING) If true, don't save the file and just display it
 boolean discardResult = false;
