@@ -1,7 +1,9 @@
-/*
-   ChannelShift Glitch
-   Based on: http://datamoshing.com/2016/06/16/how-to-glitch-images-using-processing-scripts/
-
+/**
+ * ChannelShift Glitch
+ * Based on: 
+ *   http://datamoshing.com/2016/06/16/how-to-glitch-images-using-processing-scripts/
+ * 
+ * @author Connor de la Cruz
  */
 
 
@@ -15,7 +17,7 @@ String imgFileName = "test";
 String fileType = "jpg";
 
 // Output folder (relative to script directory)
-String outputDir = "output/" + imgFileName + "/";
+String outputDir = imgDir + "output/" + imgFileName + "/";
 // If true, add a suffix to the output filename with details on the sketch config
 boolean verboseFilename = true;
 
@@ -49,16 +51,11 @@ boolean discardResult = false;
 PImage sourceImg;
 PImage targetImg;
 
-// TODO: implement
-String sessionid;
-
 int maxDisplayWidth;
 int maxDisplayHeight;
 
-// Initialize shift values (so variables are in scope when saving file)
-// Set to 0 by default, assigned a random value if the corresponding boolean is true
-int horizontalShift = 0;
-int verticalShift = 0;
+int horizontalShift;
+int verticalShift;
 
 boolean glitchComplete = false;
 boolean glitchSaved = false;
@@ -68,6 +65,13 @@ void setup() {
   // load images into PImage variables
   targetImg = loadImage(imgDir + imgFileName+"."+fileType);
   sourceImg = loadImage(imgDir + imgFileName+"."+fileType);
+
+  // Set to 0 by default, assigned a random value if the corresponding boolean is true
+  horizontalShift = 0;
+  verticalShift = 0;
+  
+  glitchComplete = false;
+  glitchSaved = false;
 
   // use only numbers (not variables) for the size() command, Processing 3
   size(1, 1);
@@ -85,6 +89,7 @@ void setup() {
   }
   surface.setSize(maxDisplayWidth, maxDisplayHeight);
 
+  background(#ffffff);
   // load image onto surface
   image(sourceImg, 0, 0, maxDisplayWidth, maxDisplayHeight);
 }
@@ -109,7 +114,8 @@ void draw() {
     else {
       glitchSaved = true;
     }
-    println("Click or press any key to exit...");
+    println("Press spacebar to run sketch again");
+    println("Click or press any other key to exit...");
   }
 }
 
@@ -266,8 +272,12 @@ void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int so
 }
 
 void keyPressed() {
-  if (glitchSaved)
-  {
+  if (key == ' ' && glitchSaved) {
+    println("Re-running sketch...");
+    setup();
+    draw();
+  }
+  else {
     System.exit(0);
   }
 }
