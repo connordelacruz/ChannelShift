@@ -17,7 +17,7 @@ String imgFileName = "test";
 String fileType = "jpg";
 
 // Output folder (relative to script directory)
-String outputDir = imgDir + "output/" + imgFileName + "/";
+String outputDir = imgDir + imgFileName + "/";
 // If true, add a suffix to the output filename with details on the sketch config
 boolean verboseFilename = true;
 
