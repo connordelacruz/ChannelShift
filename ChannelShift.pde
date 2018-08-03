@@ -1,5 +1,11 @@
 /**
- * ChannelShift Glitch
+ * ChannelShift.pde
+ *
+ * Randomly shift and swap color channels in an image.
+ * 
+ * After running the sketch, press spacebar to run again with the same
+ * configurations or click/press any other key to exit.
+ *
  * Based on: 
  *   http://datamoshing.com/2016/06/16/how-to-glitch-images-using-processing-scripts/
  * 
@@ -7,7 +13,9 @@
  */
 
 
-///// FILE SETUP
+// --------------------------------
+//  FILE SETUP
+// --------------------------------
 
 // File path (relative to script directory)
 String imgDir = "source/";
@@ -22,7 +30,9 @@ String outputDir = imgDir + imgFileName + "/";
 boolean verboseFilename = true;
 
 
-///// SKETCH CONFIGURATIONS
+// --------------------------------
+//  SKETCH CONFIGURATIONS
+// --------------------------------
 
 // repeat the process this many times
 int iterations = 3;
@@ -37,7 +47,9 @@ boolean shiftVertically = false;
 // shift the image horizontally true/false
 boolean shiftHorizontally = !shiftVertically;
 
-///// MISC
+// --------------------------------
+//  MISC
+// --------------------------------
 
 // Viewing window size (regardless of image size)
 int maxDisplaySize = 800;
@@ -108,14 +120,14 @@ void draw() {
   if (glitchComplete && !glitchSaved) {
     if (!discardResult) {
       saveResult();
-      println("Glitched image saved");
+      println("Image saved.");
     }
     // If discardResult, set glitchSaved = true to avoid repeating console output
     else {
       glitchSaved = true;
     }
     println("Press spacebar to run sketch again");
-    println("Click or press any other key to exit...");
+    println("Click or press any other key to exit");
   }
 }
 
