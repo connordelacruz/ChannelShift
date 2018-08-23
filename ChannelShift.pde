@@ -49,6 +49,9 @@ boolean recursiveIterations = true;
 boolean shiftVertically = false;
 // shift the image horizontally true/false
 boolean shiftHorizontally = !shiftVertically;
+// TODO: document
+float verticalModifier = 0;
+float horizontalModifier = 2;
 
 // --------------------------------
 //  MISC
@@ -137,7 +140,9 @@ void processImage() {
       int(random(targetImg.height * shiftThreshold)) : 0;
 
     // shift the channel
-    copyChannel(sourceImg.pixels, targetImg.pixels, verticalShift, horizontalShift, sourceChannel, targetChannel);
+    copyChannel(sourceImg.pixels, targetImg.pixels, 
+        verticalShift, horizontalShift, sourceChannel, targetChannel,
+        horizontalModifier, verticalModifier);
 
     // use the target as the new source for the next iteration
     if(recursiveIterations)
@@ -202,13 +207,16 @@ void printGlitchCompleteMsg() {
  * @param sourceChannel Channel from the source image
  * @param targetChannel Channel from the target image
  */
-void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int sourceX, int sourceChannel, int targetChannel)
-{
+// TODO: update docs
+// TODO: overload function to make modifier optional?
+void copyChannel(
+    color[] sourcePixels, color[] targetPixels, 
+    int sourceY, int sourceX, int sourceChannel, int targetChannel,
+    float modifierX, float modifierY) {
   // starting at the sourceY and pointerY loop through the rows
-  for(int y = 0; y < targetImg.height; y++)
-  {   
+  for(int y = 0; y < targetImg.height; y++) {   
     // add y counter to sourceY
-    int sourceYOffset = sourceY + y;
+    int sourceYOffset = sourceY + int(y * modifierY);
 
     // wrap around the top of the image if we've hit the bottom
     if(sourceYOffset >= targetImg.height)
@@ -218,7 +226,7 @@ void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int so
     for(int x = 0; x < targetImg.width; x++)
     {
       // add x counter to sourceX
-      int sourceXOffset = sourceX + x;
+      int sourceXOffset = sourceX + int(x * modifierX);
 
       // wrap around the left side of the image if we've hit the right side
       if(sourceXOffset >= targetImg.width)
