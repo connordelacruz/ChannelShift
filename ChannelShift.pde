@@ -54,6 +54,7 @@ boolean shiftHorizontally = !shiftVertically;
 // Viewing window size (regardless of image size)
 int maxDisplaySize = 800;
 
+// TODO: remove
 // (FOR TESTING) If true, don't save the file and just display it
 boolean discardResult = false;
 
@@ -71,6 +72,7 @@ int verticalShift;
 
 boolean glitchComplete = false;
 boolean glitchSaved = false;
+boolean glitchCompleteMsg = false;
 
 
 void setup() {
@@ -84,6 +86,7 @@ void setup() {
   
   glitchComplete = false;
   glitchSaved = false;
+  glitchCompleteMsg = false; 
 
   // use only numbers (not variables) for the size() command, Processing 3
   size(1, 1);
@@ -114,20 +117,12 @@ void draw() {
 
     // load updated image onto surface
     image(targetImg, 0, 0, maxDisplayWidth, maxDisplayHeight);
-  }
-
-  // Save file
-  if (glitchComplete && !glitchSaved) {
-    if (!discardResult) {
-      saveResult();
-      println("Image saved.");
+  } else {
+    if (!glitchCompleteMsg) {
+      println("Press spacebar to run sketch again");
+      println("Click or press any other key to exit");
+      glitchCompleteMsg = true;
     }
-    // If discardResult, set glitchSaved = true to avoid repeating console output
-    else {
-      glitchSaved = true;
-    }
-    println("Press spacebar to run sketch again");
-    println("Click or press any other key to exit");
   }
 }
 
@@ -191,6 +186,7 @@ void saveResult() {
   // save surface
   targetImg.save(outputDir + imgFileName + outputSuffix + ".png");
   glitchSaved = true;
+  println("Image saved.");
 }
 
 /**
@@ -284,19 +280,41 @@ void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int so
 }
 
 void keyPressed() {
-  if (key == ' ' && glitchSaved) {
+  // TODO: check glitchComplete is true
+  switch (key) {
+    // Re-run sketch
+    case ' ':
+      if (!glitchSaved) {
+        saveResult();
+      }
+    case 'x':
+    case 'X':
+      println("Re-running sketch...");
+      setup();
+      draw();
+      break;
+    default:
+      System.exit(0);
+      break;
+  }
+  // TODO: remove
+  /*if (key == ' ') {
+    if (!glitchSaved) {
+      saveResult();
+    }
     println("Re-running sketch...");
     setup();
     draw();
   }
   else {
     System.exit(0);
-  }
+  }*/
 }
 
 void mouseClicked() {
-  if (glitchSaved)
-  {
+  if (glitchComplete) {
+    if (!glitchSaved)
+      saveResult();
     System.exit(0);
   }
 }
