@@ -3,6 +3,7 @@
  *
  * Randomly shift and swap color channels in an image.
  * 
+ * TODO: update
  * After running the sketch, press spacebar to run again with the same
  * configurations or click/press any other key to exit.
  *
@@ -54,9 +55,6 @@ boolean shiftHorizontally = !shiftVertically;
 // Viewing window size (regardless of image size)
 int maxDisplaySize = 800;
 
-// TODO: remove
-// (FOR TESTING) If true, don't save the file and just display it
-boolean discardResult = false;
 
 ///// END
 
@@ -75,6 +73,8 @@ boolean glitchSaved = false;
 boolean glitchCompleteMsg = false;
 
 
+String INDENT = "   ";
+
 void setup() {
   // load images into PImage variables
   targetImg = loadImage(imgDir + imgFileName+"."+fileType);
@@ -83,7 +83,7 @@ void setup() {
   // Set to 0 by default, assigned a random value if the corresponding boolean is true
   horizontalShift = 0;
   verticalShift = 0;
-  
+
   glitchComplete = false;
   glitchSaved = false;
   glitchCompleteMsg = false; 
@@ -114,15 +114,11 @@ void draw() {
 
   if (!glitchComplete) {
     processImage();
-
     // load updated image onto surface
     image(targetImg, 0, 0, maxDisplayWidth, maxDisplayHeight);
-  } else {
-    if (!glitchCompleteMsg) {
-      println("Press spacebar to run sketch again");
-      println("Click or press any other key to exit");
-      glitchCompleteMsg = true;
-    }
+  } 
+  else if (!glitchCompleteMsg) {
+    printGlitchCompleteMsg();
   }
 }
 
@@ -168,6 +164,7 @@ void processImage() {
  * Generate output file name and save result
  */
 void saveResult() {
+  println("Saving result...");
   // Append suffix with unique identifier
   String outputSuffix = hex((int)random(0xffff),4);
 
@@ -184,9 +181,23 @@ void saveResult() {
       outputSuffix += "-hori" + horizontalShift;
   }
   // save surface
-  targetImg.save(outputDir + imgFileName + outputSuffix + ".png");
+  String outputFile = outputDir + imgFileName + outputSuffix + ".png";
+  targetImg.save(outputFile);
   glitchSaved = true;
-  println("Image saved.");
+  println("Result saved:");
+  println(INDENT + outputFile);
+  println("");
+}
+
+// TODO: document
+void printGlitchCompleteMsg() { 
+  println("GLITCH COMPLETE.");
+  println(INDENT + "SPACEBAR: Save result and run again");
+  println(INDENT + "X: Discard result and run again");
+  println(INDENT + "CLICK: Save result and quit");
+  println(INDENT + "ESC: Discard result and quit");
+  println("");
+  glitchCompleteMsg = true;
 }
 
 /**
@@ -297,18 +308,6 @@ void keyPressed() {
       System.exit(0);
       break;
   }
-  // TODO: remove
-  /*if (key == ' ') {
-    if (!glitchSaved) {
-      saveResult();
-    }
-    println("Re-running sketch...");
-    setup();
-    draw();
-  }
-  else {
-    System.exit(0);
-  }*/
 }
 
 void mouseClicked() {
