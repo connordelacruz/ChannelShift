@@ -80,10 +80,6 @@ void setup() {
   targetImg = loadImage(imgDir + imgFileName+"."+fileType);
   sourceImg = loadImage(imgDir + imgFileName+"."+fileType);
 
-  // Set to 0 by default, assigned a random value if the corresponding boolean is true
-  horizontalShift = 0;
-  verticalShift = 0;
-
   glitchComplete = false;
   glitchSaved = false;
   glitchCompleteMsg = false; 
@@ -103,15 +99,12 @@ void setup() {
     maxDisplayHeight = (int)(maxDisplaySize / ratio);
   }
   surface.setSize(maxDisplayWidth, maxDisplayHeight);
-
-  background(#ffffff);
   // load image onto surface
   image(sourceImg, 0, 0, maxDisplayWidth, maxDisplayHeight);
 }
 
 
 void draw() { 
-
   if (!glitchComplete) {
     processImage();
     // load updated image onto surface
@@ -129,21 +122,17 @@ void processImage() {
   targetImg.loadPixels();
 
   // repeat the process according to the iterations variable
-  for(int i = 0; i < iterations; i++)
-  {
+  for(int i = 0; i < iterations; i++) {
     // generate random numbers for which channels to shift
     int sourceChannel = int(random(3));
     // pick a random channel to swap with if swapChannels
     int targetChannel = swapChannels ? int(random(3)) : sourceChannel;
 
-
-    // if shiftHorizontally is true, generate a random number to shift horizontally by
-    if(shiftHorizontally)
-      horizontalShift = int(random(targetImg.width * shiftThreshold));
-
-    // if shiftVertically is true, generate a random number to shift vertically by
-    if(shiftVertically)
-      verticalShift = int(random(targetImg.height * shiftThreshold));
+    // Set horizontal and vertical shift values
+    horizontalShift = shiftHorizontally ? 
+      int(random(targetImg.width * shiftThreshold)) : 0;
+    verticalShift = shiftVertically ? 
+      int(random(targetImg.height * shiftThreshold)) : 0;
 
     // shift the channel
     copyChannel(sourceImg.pixels, targetImg.pixels, verticalShift, horizontalShift, sourceChannel, targetChannel);
@@ -189,7 +178,9 @@ void saveResult() {
   println("");
 }
 
-// TODO: document
+/**
+ * Print "glitch complete" message to console
+ */
 void printGlitchCompleteMsg() { 
   println("GLITCH COMPLETE.");
   println(INDENT + "SPACEBAR: Save result and run again");
