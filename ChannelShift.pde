@@ -3,9 +3,11 @@
  *
  * Randomly shift and swap color channels in an image.
  * 
- * TODO: update
- * After running the sketch, press spacebar to run again with the same
- * configurations or click/press any other key to exit.
+ * After running the sketch: 
+ *    Press SPACEBAR to save result and run again
+ *    Press X to discard result and run again
+ *    Click the left mouse button to save result and quit
+ *    Press ESC to discard result and quit
  *
  * Based on: 
  *   http://datamoshing.com/2016/06/16/how-to-glitch-images-using-processing-scripts/
@@ -295,8 +297,10 @@ void keyPressed() {
       setup();
       draw();
       break;
-    default:
+    case ESC:
       System.exit(0);
+      break;
+    default:
       break;
   }
 }
