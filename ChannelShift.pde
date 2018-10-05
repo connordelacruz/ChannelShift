@@ -15,8 +15,15 @@
  * @author Connor de la Cruz
  */
 
+// CONSTANTS (DO NOT MODIFY)
+// Shift Types
+static final int NORMAL_SHIFT = 0;
 
-// --------------------------------
+
+// ================================================================
+// CONFIG START
+// ================================================================
+
 //  FILE SETUP
 // --------------------------------
 
@@ -33,10 +40,11 @@ String outputDir = imgDir + imgFileName + "/";
 boolean verboseFilename = true;
 
 
-// --------------------------------
 //  SKETCH CONFIGURATIONS
 // --------------------------------
 
+// TODO: document
+int shiftType = NORMAL_SHIFT;
 // repeat the process this many times
 int iterations = 3;
 // swap channels at random if true, just shift if false
@@ -50,15 +58,15 @@ boolean shiftVertically = false;
 // shift the image horizontally true/false
 boolean shiftHorizontally = !shiftVertically;
 
-// --------------------------------
 //  MISC
 // --------------------------------
 
 // Viewing window size (regardless of image size)
 int maxDisplaySize = 800;
 
-
-///// END
+// ================================================================
+// CONFIG END
+// ================================================================
 
 
 PImage sourceImg;
@@ -193,6 +201,39 @@ void printGlitchCompleteMsg() {
   glitchCompleteMsg = true;
 }
 
+void keyPressed() {
+  // TODO: check glitchComplete is true
+  switch (key) {
+    // Re-run sketch
+    case ' ':
+      if (!glitchSaved) {
+        saveResult();
+      }
+    case 'x':
+    case 'X':
+      println("Re-running sketch...");
+      setup();
+      draw();
+      break;
+    case ESC:
+      System.exit(0);
+      break;
+    default:
+      break;
+  }
+}
+
+void mouseClicked() {
+  if (glitchComplete) {
+    if (!glitchSaved)
+      saveResult();
+    System.exit(0);
+  }
+}
+
+
+/* Shift Functions */
+
 /**
  * Shift the channel
  * @param sourcePixels Pixels from the source image
@@ -205,24 +246,14 @@ void printGlitchCompleteMsg() {
 void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int sourceX, int sourceChannel, int targetChannel)
 {
   // starting at the sourceY and pointerY loop through the rows
-  for(int y = 0; y < targetImg.height; y++)
-  {   
-    // add y counter to sourceY
-    int sourceYOffset = sourceY + y;
-
-    // wrap around the top of the image if we've hit the bottom
-    if(sourceYOffset >= targetImg.height)
-      sourceYOffset -= targetImg.height;
+  for(int y = 0; y < targetImg.height; y++) {   
+    // Calculate y offset
+    int sourceYOffset = calculateOffset(sourceY, y, targetImg.height);
 
     // starting at the sourceX and pointerX loop through the pixels in this row
-    for(int x = 0; x < targetImg.width; x++)
-    {
-      // add x counter to sourceX
-      int sourceXOffset = sourceX + x;
-
-      // wrap around the left side of the image if we've hit the right side
-      if(sourceXOffset >= targetImg.width)
-        sourceXOffset -= targetImg.width;
+    for(int x = 0; x < targetImg.width; x++) {
+      // Calculate x offset
+      int sourceXOffset = calculateOffset(sourceX, x, targetImg.width);
 
       // get the color of the source pixel
       color sourcePixel = sourcePixels[sourceYOffset * targetImg.width + sourceXOffset];
@@ -283,32 +314,16 @@ void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int so
   }
 }
 
-void keyPressed() {
-  // TODO: check glitchComplete is true
-  switch (key) {
-    // Re-run sketch
-    case ' ':
-      if (!glitchSaved) {
-        saveResult();
-      }
-    case 'x':
-    case 'X':
-      println("Re-running sketch...");
-      setup();
-      draw();
-      break;
-    case ESC:
-      System.exit(0);
-      break;
-    default:
-      break;
-  }
+
+// TODO: doc
+int calculateOffset(int shiftAmount, int coordinate, int imgDimension) {
+  // TODO: account for different shift types
+  int offset = shiftAmount + coordinate;
+  // Wrap around if offset is greater than the image dimension
+  if (offset >= imgDimension)
+    offset -= imgDimension;
+  return offset;
 }
 
-void mouseClicked() {
-  if (glitchComplete) {
-    if (!glitchSaved)
-      saveResult();
-    System.exit(0);
-  }
-}
+
+
