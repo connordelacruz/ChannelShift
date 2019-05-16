@@ -138,6 +138,9 @@ void processImage() {
   if (uniformShift) {
     uniformHorizontalShiftAmount = randomHorizontalShift();
     uniformVerticalShiftAmount = randomVerticalShift();
+    // TODO: is this necessary to reset? it seems like it might be
+    horizontalShift = 0;
+    verticalShift = 0;
   }
 
   // repeat the process according to the iterations variable
@@ -150,21 +153,14 @@ void processImage() {
     // Determine shift amounts
     if (shiftHorizontally) {
       horizontalShift = uniformShift ?
-        // TODO: calculate differently if recursive
-        (horizontalShift + uniformHorizontalShiftAmount) % targetImg.width :
+        incrementUniformHorizontalShift(horizontalShift) :
         randomHorizontalShift();
     } 
     if (shiftVertically) {
       verticalShift = uniformShift ?
-        (verticalShift + uniformVerticalShiftAmount) % targetImg.height :
+        incrementUniformVerticalShift(verticalShift) :
         randomVerticalShift();
     } 
-    // Set horizontal and vertical shift values
-    // TODO: REMOVE
-    /* horizontalShift = shiftHorizontally ? */ 
-    /*   int(random(targetImg.width * shiftThreshold)) : 0; */
-    /* verticalShift = shiftVertically ? */ 
-    /*   int(random(targetImg.height * shiftThreshold)) : 0; */
 
     // shift the channel
     copyChannel(sourceImg.pixels, targetImg.pixels, verticalShift, horizontalShift, sourceChannel, targetChannel);
@@ -190,6 +186,7 @@ void saveResult() {
   String outputSuffix = hex((int)random(0xffff),4);
 
   // Append config details if verboseFilename is set
+  // TODO: add new configs
   if (verboseFilename) { 
     outputSuffix += "_" + iterations + "it";
     if (swapChannels)
@@ -328,8 +325,27 @@ int randomVerticalShift() {
 }
 
 int randomShift(boolean horizontal) {
-  int targetDimension = horizontal ? targetImg.width: targetImg.height;
-  return int(random(targetDimension * shiftThreshold));
+  return int(random(getTargetDimension(horizontal) * shiftThreshold));
+}
+
+int incrementUniformHorizontalShift(int shift) {
+  return incrementUniformShift(true, shift);
+}
+
+int incrementUniformVerticalShift(int shift) {
+  return incrementUniformShift(false, shift);
+}
+
+int incrementUniformShift(boolean horizontal, int shift) {
+  int targetDimension = getTargetDimension(horizontal);
+  int uniformShiftAmount = horizontal ? uniformHorizontalShiftAmount : uniformVerticalShiftAmount;
+  return recursiveIterations ? 
+    uniformShiftAmount % targetDimension :
+    (shift + uniformShiftAmount) % targetDimension;
+}
+
+int getTargetDimension(boolean horizontal) {
+  return horizontal ? targetImg.width: targetImg.height;
 }
 
 // Channel Selection
