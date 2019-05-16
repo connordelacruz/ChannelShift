@@ -37,18 +37,26 @@ boolean verboseFilename = true;
 //  SKETCH CONFIGURATIONS
 // --------------------------------
 
+// TODO: reset defaults
+
 // repeat the process this many times
 int iterations = 3;
 // swap channels at random if true, just shift if false
-boolean swapChannels = true;
+boolean swapChannels = !true;
 // Max percent of image size to shift channels by. Lower numbers for less drastic effects
 float shiftThreshold = 1.0;
 // use result image as new source for iterations
-boolean recursiveIterations = true;
+boolean recursiveIterations = !true;
+// TODO: doc, false
+boolean uniformShift = true;
+// TODO: doc, allow for random, implement in non-uniform?
+int uniformInitialSourceChannel = 0;
+int uniformInitialTargetChannel = 2;
 // shift the image vertically true/false
-boolean shiftVertically = false;
+boolean shiftVertically = !false;
 // shift the image horizontally true/false
-boolean shiftHorizontally = !shiftVertically;
+boolean shiftHorizontally = !!shiftVertically;
+// TODO: proportional shifts if both
 
 // --------------------------------
 //  MISC
@@ -67,8 +75,11 @@ PImage targetImg;
 int maxDisplayWidth;
 int maxDisplayHeight;
 
-int horizontalShift;
-int verticalShift;
+int horizontalShift = 0;
+int verticalShift = 0;
+// Uniform
+int uniformHorizontalShiftAmount = 0;
+int uniformVerticalShiftAmount = 0;
 
 boolean glitchComplete = false;
 boolean glitchSaved = false;
@@ -123,18 +134,37 @@ void processImage() {
   sourceImg.loadPixels();
   targetImg.loadPixels();
 
+  // Calculate uniform shift amounts (if applicable)
+  if (uniformShift) {
+    uniformHorizontalShiftAmount = randomHorizontalShift();
+    uniformVerticalShiftAmount = randomVerticalShift();
+  }
+
   // repeat the process according to the iterations variable
   for(int i = 0; i < iterations; i++) {
     // generate random numbers for which channels to shift
-    int sourceChannel = int(random(3));
+    int sourceChannel = selectSourceChannel(i);
     // pick a random channel to swap with if swapChannels
-    int targetChannel = swapChannels ? int(random(3)) : sourceChannel;
+    int targetChannel = swapChannels ? selectTargetChannel(i) : sourceChannel;
 
+    // Determine shift amounts
+    if (shiftHorizontally) {
+      horizontalShift = uniformShift ?
+        // TODO: calculate differently if recursive
+        (horizontalShift + uniformHorizontalShiftAmount) % targetImg.width :
+        randomHorizontalShift();
+    } 
+    if (shiftVertically) {
+      verticalShift = uniformShift ?
+        (verticalShift + uniformVerticalShiftAmount) % targetImg.height :
+        randomVerticalShift();
+    } 
     // Set horizontal and vertical shift values
-    horizontalShift = shiftHorizontally ? 
-      int(random(targetImg.width * shiftThreshold)) : 0;
-    verticalShift = shiftVertically ? 
-      int(random(targetImg.height * shiftThreshold)) : 0;
+    // TODO: REMOVE
+    /* horizontalShift = shiftHorizontally ? */ 
+    /*   int(random(targetImg.width * shiftThreshold)) : 0; */
+    /* verticalShift = shiftVertically ? */ 
+    /*   int(random(targetImg.height * shiftThreshold)) : 0; */
 
     // shift the channel
     copyChannel(sourceImg.pixels, targetImg.pixels, verticalShift, horizontalShift, sourceChannel, targetChannel);
@@ -282,6 +312,44 @@ void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int so
     }
   }
 }
+
+/* Helpers */
+
+// TODO: doc
+
+// Shifting
+
+int randomHorizontalShift() {
+  return randomShift(true);
+}
+
+int randomVerticalShift() {
+  return randomShift(false);
+}
+
+int randomShift(boolean horizontal) {
+  int targetDimension = horizontal ? targetImg.width: targetImg.height;
+  return int(random(targetDimension * shiftThreshold));
+}
+
+// Channel Selection
+
+int selectSourceChannel(int i) {
+  return selectChannel(uniformInitialSourceChannel, i);
+}
+
+int selectTargetChannel(int i) {
+  return selectChannel(uniformInitialTargetChannel, i);
+}
+
+int selectChannel(int uniformInitialChannel, int i) {
+  return uniformShift ? 
+      (i + uniformInitialChannel) % 3 : 
+      int(random(3));
+}
+
+
+/* Input */
 
 void keyPressed() {
   // TODO: check glitchComplete is true
