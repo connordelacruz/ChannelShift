@@ -74,8 +74,12 @@ boolean glitchComplete = false;
 boolean glitchSaved = false;
 boolean glitchCompleteMsg = false;
 
+// TODO: manualMode = false
 
 String INDENT = "   ";
+
+
+// DRAWING
 
 void setup() {
   // load images into PImage variables
@@ -150,48 +154,6 @@ void processImage() {
   glitchComplete = true;
 }
 
-
-/**
- * Generate output file name and save result
- */
-void saveResult() {
-  println("Saving result...");
-  // Append suffix with unique identifier
-  String outputSuffix = hex((int)random(0xffff),4);
-
-  // Append config details if verboseFilename is set
-  if (verboseFilename) { 
-    outputSuffix += "_" + iterations + "it";
-    if (swapChannels)
-      outputSuffix += "-swap";
-    if (recursiveIterations)
-      outputSuffix += "-recursive";
-    if (shiftVertically)
-      outputSuffix += "-vert" + verticalShift;
-    if (shiftHorizontally)
-      outputSuffix += "-hori" + horizontalShift;
-  }
-  // save surface
-  String outputFile = outputDir + imgFileName + outputSuffix + ".png";
-  targetImg.save(outputFile);
-  glitchSaved = true;
-  println("Result saved:");
-  println(INDENT + outputFile);
-  println("");
-}
-
-/**
- * Print "glitch complete" message to console
- */
-void printGlitchCompleteMsg() { 
-  println("GLITCH COMPLETE.");
-  println(INDENT + "SPACEBAR: Save result and run again");
-  println(INDENT + "X: Discard result and run again");
-  println(INDENT + "CLICK: Save result and quit");
-  println(INDENT + "ESC: Discard result and quit");
-  println("");
-  glitchCompleteMsg = true;
-}
 
 /**
  * Shift the channel
@@ -284,24 +246,86 @@ void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int so
 }
 
 
-// INPUTS
+// SAVING
+
+// TODO: doc
+String getOutputFilePath() {
+  // Append suffix with unique identifier
+  // TODO: make this configurable (suffix length, optional)
+  String outputSuffix = hex((int)random(0xffff),4);
+
+  // Append config details if verboseFilename is set
+  if (verboseFilename) { 
+    outputSuffix += "_" + iterations + "it";
+    if (swapChannels)
+      outputSuffix += "-swap";
+    if (recursiveIterations)
+      outputSuffix += "-recursive";
+    if (shiftVertically)
+      outputSuffix += "-vert" + verticalShift;
+    if (shiftHorizontally)
+      outputSuffix += "-hori" + horizontalShift;
+  }
+  // save surface
+  return outputDir + imgFileName + outputSuffix + ".png";
+}
+
+/**
+ * Generate output file name and save result
+ */
+void saveResult() {
+  println("Saving result...");
+  // save surface
+  String outputFile = getOutputFilePath();
+  targetImg.save(outputFile);
+  glitchSaved = true;
+  println("Result saved:");
+  println(INDENT + outputFile);
+  println("");
+}
+
+// TODO: doc
+boolean attemptSaveResult() {
+  if (!glitchSaved) {
+    saveResult();
+  }
+  return glitchSaved;
+} 
+
+
+// OUTPUT
+
+/**
+ * Print "glitch complete" message to console
+ */
+void printGlitchCompleteMsg() { 
+  println("GLITCH COMPLETE.");
+  println(INDENT + "SPACEBAR: Save result and run again");
+  println(INDENT + "X: Discard result and run again");
+  println(INDENT + "CLICK: Save result and quit");
+  println(INDENT + "ESC: Discard result and quit");
+  println("");
+  glitchCompleteMsg = true;
+}
+
+
+// INPUT
 
 // Handlers
 
 // TODO: doc, extract all to functions so this just handles keys regardless of implementation
 void randomModeKeyHandler(char k) {
+  // TODO: add 'm'/'M' case (switch to manual mode)
   // TODO: check glitchComplete is true
   switch (k) {
     // Re-run sketch
     case ' ':
-      if (!glitchSaved) {
-        saveResult();
-      }
+      boolean saved = attemptSaveResult();
+      if (!saved)
+        break;
     case 'x':
     case 'X':
-      println("Re-running sketch...");
-      setup();
-      draw();
+      restartSketch();
       break;
     case ESC:
       System.exit(0);
@@ -323,8 +347,18 @@ void keyPressed() {
 // TODO: extract to randomModeClickHandler
 void mouseClicked() {
   if (glitchComplete) {
-    if (!glitchSaved)
-      saveResult();
-    System.exit(0);
+    boolean saved = attemptSaveResult();
+    if (saved)
+      System.exit(0);
   }
 }
+
+
+// UTILITIES
+
+void restartSketch() {
+  println("Re-running sketch...");
+  setup();
+  draw();
+}
+
