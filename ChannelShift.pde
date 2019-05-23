@@ -95,6 +95,35 @@ public static final int CHANNEL_B = 2;
 // CLASSES
 // TODO: probably make more of these
 
+public class RandomModeManager {
+  // TODO: move random draw stuff here
+
+  // METHODS
+
+  // TODO: doc, extract all to functions so this just handles keys regardless of implementation
+  // TODO: return something so we know what's going on when calling?
+  public void keyHandler(char k) {
+    // TODO: add 'm'/'M' case (switch to manual mode)
+    // TODO: check glitchComplete is true
+    switch (k) {
+      // Re-run sketch
+      case ' ':
+        boolean saved = attemptSaveResult();
+        if (!saved)
+          break;
+      case 'x':
+      case 'X':
+        restartSketch();
+        break;
+      case ESC:
+        System.exit(0);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
 // TODO: doc
 public class ManualModeManager {
   // CONSTANTS
