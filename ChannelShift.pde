@@ -283,9 +283,15 @@ void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int so
   }
 }
 
-void keyPressed() {
+
+// INPUTS
+
+// Handlers
+
+// TODO: doc, extract all to functions so this just handles keys regardless of implementation
+void randomModeKeyHandler(char k) {
   // TODO: check glitchComplete is true
-  switch (key) {
+  switch (k) {
     // Re-run sketch
     case ' ':
       if (!glitchSaved) {
@@ -305,6 +311,16 @@ void keyPressed() {
   }
 }
 
+// TODO: manualModeKeyHandler
+
+
+// Processing
+
+void keyPressed() {
+  randomModeKeyHandler(key);
+}
+
+// TODO: extract to randomModeClickHandler
 void mouseClicked() {
   if (glitchComplete) {
     if (!glitchSaved)
