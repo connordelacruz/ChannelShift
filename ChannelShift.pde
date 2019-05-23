@@ -51,6 +51,12 @@ boolean shiftVertically = false;
 boolean shiftHorizontally = !shiftVertically;
 
 // --------------------------------
+// SKETCH MODE
+// --------------------------------
+// TODO: doc
+boolean manualMode = false;
+
+// --------------------------------
 //  MISC
 // --------------------------------
 
@@ -74,9 +80,53 @@ boolean glitchComplete = false;
 boolean glitchSaved = false;
 boolean glitchCompleteMsg = false;
 
-// TODO: manualMode = false
 
-String INDENT = "   ";
+// CONSTANTS
+
+// Indent string used in console output
+public static final String INDENT = "   ";
+
+// int representations of channels
+public static final int CHANNEL_R = 0;
+public static final int CHANNEL_G = 1;
+public static final int CHANNEL_B = 2;
+
+
+// CLASSES
+// TODO: probably make more of these
+
+// TODO: doc
+public class ManualModeManager {
+  // CONSTANTS
+
+  // Select - Choose an action
+  public static final int MODE_SELECT = 0;
+  // Swap - Switch the current channel with another
+  public static final int MODE_SWAP = 1;
+  // Horizontal Shift - Move current channel along x-axis
+  public static final int MODE_H_SHIFT = 2;
+  // Vertical Shift - Move current channel along y-axis
+  public static final int MODE_V_SHIFT = 3;
+  // Free Shift - Move current channel along either axis
+  public static final int MODE_FREE_SHIFT = 4;
+
+  // ATTRIBUTES
+
+  // Currently selected channel
+  int currentChannel;
+  // Current action
+  int currentAction;
+
+  // METHODS
+
+  public ManualModeManager() {
+    currentChannel = CHANNEL_R;
+    currentAction = MODE_SELECT;
+  }
+
+  // TODO: handle actions
+
+}
 
 
 // DRAWING
@@ -210,15 +260,15 @@ void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int so
       // assigned the source channel value based on sourceChannel random number passed in
       switch(sourceChannel)
       {
-        case 0:
+        case CHANNEL_R:
           // use red channel from source
           sourceChannelValue = sourceRed;
           break;
-        case 1:
+        case CHANNEL_G:
           // use green channel from source
           sourceChannelValue = sourceGreen;
           break;
-        case 2:
+        case CHANNEL_B:
           // use blue channel from source
           sourceChannelValue = sourceBlue;
           break;
@@ -227,15 +277,15 @@ void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int so
       // assigned the source channel value to a target channel based on targetChannel random number passed in
       switch(targetChannel)
       {
-        case 0:
+        case CHANNEL_R:
           // assign source channel value to target red channel
           targetPixels[y * targetImg.width + x] =  color(sourceChannelValue, targetGreen, targetBlue);
           break;
-        case 1:
+        case CHANNEL_G:
           // assign source channel value to target green channel
           targetPixels[y * targetImg.width + x] =  color(targetRed, sourceChannelValue, targetBlue);
           break;
-        case 2:
+        case CHANNEL_B:
           // assign source channel value to target blue channel
           targetPixels[y * targetImg.width + x] =  color(targetRed, targetGreen, sourceChannelValue);
           break;
@@ -249,6 +299,7 @@ void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int so
 // SAVING
 
 // TODO: doc
+// TODO: use random seed for filename so you can reproduce results?
 String getOutputFilePath() {
   // Append suffix with unique identifier
   // TODO: make this configurable (suffix length, optional)
@@ -335,7 +386,15 @@ void randomModeKeyHandler(char k) {
   }
 }
 
-// TODO: manualModeKeyHandler
+void manualModeKeyHandler(char k) {
+  switch(k) {
+    case ESC:
+      System.exit(0);
+      break;
+    default:
+      break;
+  }
+}
 
 
 // Processing
@@ -360,5 +419,19 @@ void restartSketch() {
   println("Re-running sketch...");
   setup();
   draw();
+}
+
+
+// TODO: document both
+void toggleMode() {
+  toggleMode(!manualMode);
+}
+
+void toggleMode(boolean enable) {
+  manualMode = enable;
+  // TODO: better output
+  String msg = manualMode ? "Manual Mode" : "Random Mode";
+  println(msg);
+  println("");
 }
 
