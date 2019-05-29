@@ -66,6 +66,7 @@ int maxDisplaySize = 800;
 
 ///// END
 
+ModeManager mgr = null;
 
 PImage sourceImg;
 PImage targetImg;
@@ -93,9 +94,13 @@ public static final int CHANNEL_B = 2;
 
 
 // CLASSES
-// TODO: probably make more of these
 
-public class RandomModeManager {
+// TODO: doc
+public interface ModeManager {
+  public void keyHandler(char k);
+}
+
+public class RandomModeManager implements ModeManager {
   // TODO: move random draw stuff here
 
   // METHODS
@@ -125,7 +130,7 @@ public class RandomModeManager {
 }
 
 // TODO: doc
-public class ManualModeManager {
+public class ManualModeManager implements ModeManager {
   // CONSTANTS
 
   // Select - Choose an action
@@ -155,6 +160,17 @@ public class ManualModeManager {
 
   // TODO: handle actions
 
+  public void keyHandler(char k) {
+    // TODO
+    switch (k) {
+      case ESC:
+        System.exit(0);
+        break;
+      default:
+        break;
+    }
+  }
+
 }
 
 
@@ -168,6 +184,9 @@ void setup() {
   glitchComplete = false;
   glitchSaved = false;
   glitchCompleteMsg = false; 
+
+  if (mgr == null)
+    mgr = new RandomModeManager();
 
   // use only numbers (not variables) for the size() command, Processing 3
   size(1, 1);
