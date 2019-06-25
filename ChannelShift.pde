@@ -97,6 +97,9 @@ public static final int CHANNEL_B = 2;
 
 // TODO: doc
 public interface ModeManager {
+  // Process the image
+  public void processImage();
+  // Handle key presses
   public void keyHandler(char k);
 }
 
@@ -104,6 +107,33 @@ public class RandomModeManager implements ModeManager {
   // TODO: move random draw stuff here
 
   // METHODS
+
+  // TODO: doc
+  public void processImage() {
+    // load pixels
+    sourceImg.loadPixels();
+    targetImg.loadPixels();
+
+    // repeat the process according to the iterations variable
+    for(int i = 0; i < iterations; i++) {
+      // generate random numbers for which channels to shift
+      int sourceChannel = int(random(3));
+      // pick a random channel to swap with if swapChannels
+      int targetChannel = swapChannels ? int(random(3)) : sourceChannel;
+
+      // Set horizontal and vertical shift values
+      horizontalShift = shiftHorizontally ? 
+        int(random(targetImg.width * shiftThreshold)) : 0;
+      verticalShift = shiftVertically ? 
+        int(random(targetImg.height * shiftThreshold)) : 0;
+
+      // shift the channel
+      copyChannel(sourceImg.pixels, targetImg.pixels, verticalShift, horizontalShift, sourceChannel, targetChannel);
+
+      // use the target as the new source for the next iteration
+      if(recursiveIterations)
+        sourceImg.pixels = targetImg.pixels;
+  }
 
   // TODO: doc, extract all to functions so this just handles keys regardless of implementation
   // TODO: return something so we know what's going on when calling?
@@ -156,6 +186,11 @@ public class ManualModeManager implements ModeManager {
   public ManualModeManager() {
     currentChannel = CHANNEL_R;
     currentAction = MODE_SELECT;
+  }
+
+  // TODO: figure out how this works dynamically
+  public void processImage() {
+    return;
   }
 
   // TODO: handle actions
@@ -293,7 +328,8 @@ void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int so
       float sourceBlue = blue(sourcePixel);
 
       // get the color of the target pixel
-      color targetPixel = targetPixels[y * targetImg.width + x]; 
+      int targetPixelIndex = getPixelIndex(x, y, targetImg.width);
+      color targetPixel = targetPixels[targetPixelIndex]; 
 
       // get the RGB of the target pixel
       // two of the RGB channel values are required to create the new target color
@@ -323,24 +359,29 @@ void copyChannel(color[] sourcePixels, color[] targetPixels, int sourceY, int so
       }
 
       // assigned the source channel value to a target channel based on targetChannel random number passed in
-      switch(targetChannel)
-      {
+      switch(targetChannel) {
         case CHANNEL_R:
           // assign source channel value to target red channel
-          targetPixels[y * targetImg.width + x] =  color(sourceChannelValue, targetGreen, targetBlue);
+          targetPixels[targetPixelIndex] =  color(sourceChannelValue, targetGreen, targetBlue);
           break;
         case CHANNEL_G:
           // assign source channel value to target green channel
-          targetPixels[y * targetImg.width + x] =  color(targetRed, sourceChannelValue, targetBlue);
+          targetPixels[targetPixelIndex] =  color(targetRed, sourceChannelValue, targetBlue);
           break;
         case CHANNEL_B:
           // assign source channel value to target blue channel
-          targetPixels[y * targetImg.width + x] =  color(targetRed, targetGreen, sourceChannelValue);
+          targetPixels[targetPixelIndex] =  color(targetRed, targetGreen, sourceChannelValue);
           break;
       }
 
     }
   }
+}
+
+
+// TODO: doc
+int getPixelIndex(x, y, imgWidth) {
+  return y * imgWidth + x;
 }
 
 
